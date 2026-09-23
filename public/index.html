@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alumni Association Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#f0f7ff', 100: '#e0effe', 500: '#0284c7', 600: '#0369a1', 700: '#075985', 800: '#0c4a6e', 900: '#082f49' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Navigation Bar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="navigate('home')">
+        <div class="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="block font-bold text-slate-900 leading-tight text-base">Alumni Association</span>
+          <span class="text-xs text-slate-500 font-medium tracking-wide">Together We Grow</span>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
+        <a href="javascript:void(0)" onclick="navigate('home')" class="hover:text-brand-600 transition">Home</a>
+        <a href="javascript:void(0)" onclick="navigate('directory')" class="hover:text-brand-600 transition">Alumni Directory</a>
+        <a href="javascript:void(0)" onclick="navigate('events')" class="hover:text-brand-600 transition">Events</a>
+        <a href="javascript:void(0)" onclick="navigate('gallery')" class="hover:text-brand-600 transition">Gallery</a>
+        <a href="javascript:void(0)" onclick="navigate('contact')" class="hover:text-brand-600 transition">Contact</a>
+      </nav>
+
+      <div class="flex items-center space-x-3">
+        <div id="nav-logged-out" class="flex items-center space-x-2">
+          <button onclick="navigate('admin-login')" class="flex items-center gap-1.5 text-sm font-medium text-slate-700 hover:text-brand-600 px-3 py-1.5 rounded transition">
+            <i data-lucide="lock" class="w-4 h-4 text-slate-400"></i> Admin Login
+          </button>
+          <button onclick="navigate('register')" class="text-sm font-medium bg-brand-600 text-white hover:bg-brand-700 px-4 py-2 rounded-lg shadow-sm transition">Register Now</button>
+        </div>
+
+        <div id="nav-logged-in" class="hidden items-center space-x-3">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Admin Active
+          </span>
+          <button onclick="navigate('admin')" class="text-xs font-semibold px-3 py-2 bg-brand-600 text-white hover:bg-brand-700 rounded-lg">Panel</button>
+          <button onclick="logoutAdmin()" class="text-xs font-semibold px-3 py-2 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-lg border border-rose-200">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Viewports -->
+  <main class="flex-1">
+
+    <!-- VIEW 1: HOMEPAGE -->
+    <section id="view-home" class="app-view">
+      <div class="relative bg-slate-900 text-white py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-40">
+          <img id="home-banner-img" src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80" alt="Campus" class="w-full h-full object-cover">
+        </div>
+        <div class="relative z-10 max-w-5xl mx-auto text-center">
+          <h1 id="cms-render-hero-title" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">Welcome to Our Alumni Community</h1>
+          <p id="cms-render-hero-desc" class="mt-6 text-lg sm:text-xl text-slate-200 max-w-3xl mx-auto font-light leading-relaxed">Reconnecting Friends | Building Networks | Shaping the Future</p>
+          <div class="mt-8 flex justify-center gap-4">
+            <button onclick="navigate('register')" class="px-6 py-3 bg-brand-600 hover:bg-brand-500 font-semibold rounded-lg shadow-lg text-white transition">Join Now</button>
+            <button onclick="navigate('directory')" class="px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm font-semibold rounded-lg text-white border border-white/30 transition">Explore Alumni</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="bg-white border-b border-slate-200 py-8 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+          <div class="p-4 border-r last:border-r-0 border-slate-100">
+            <div class="flex justify-center items-center gap-2 text-brand-600 font-bold text-3xl">
+              <i data-lucide="users" class="w-7 h-7"></i>
+              <span>1250+</span>
+            </div>
+            <div class="text-xs text-slate-500 uppercase font-semibold mt-1">Registered Members</div>
+          </div>
+          <div class="p-4 border-r last:border-r-0 border-slate-100">
+            <div class="flex justify-center items-center gap-2 text-brand-600 font-bold text-3xl">
+              <i data-lucide="map-pin" class="w-7 h-7"></i>
+              <span>950+</span>
+            </div>
+            <div class="text-xs text-slate-500 uppercase font-semibold mt-1">Regional Chapters</div>
+          </div>
+          <div class="p-4 border-r last:border-r-0 border-slate-100">
+            <div class="flex justify-center items-center gap-2 text-brand-600 font-bold text-3xl">
+              <i data-lucide="calendar" class="w-7 h-7"></i>
+              <span>45+</span>
+            </div>
+            <div class="text-xs text-slate-500 uppercase font-semibold mt-1">Batches Passed</div>
+          </div>
+          <div class="p-4">
+            <div class="flex justify-center items-center gap-2 text-brand-600 font-bold text-3xl">
+              <i data-lucide="heart" class="w-7 h-7"></i>
+              <span>100%</span>
+            </div>
+            <div class="text-xs text-slate-500 uppercase font-semibold mt-1">Together Forever</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-6xl mx-auto px-4 py-12">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Notice</span>
+            <h3 id="home-notice-title" class="text-lg font-bold text-slate-900 mt-2">Annual Alumni Reunion 2026</h3>
+            <p id="home-notice-desc" class="text-sm text-slate-600 mt-1">Celebrations will be held in the auditorium. Registration is open!</p>
+          </div>
+          <div class="text-sm text-slate-400 whitespace-nowrap"><i data-lucide="clock" class="inline w-4 h-4 mr-1"></i> <span id="home-notice-date">14 April 2026</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: REGISTRATION -->
+    <section id="view-register" class="app-view hidden max-w-4xl mx-auto px-4 py-12">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+        <h2 class="text-2xl font-bold text-slate-900 text-center mb-6">Alumni Registration Form</h2>
+        <form onsubmit="handleRegister(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Full Name *</label>
+              <input required type="text" id="reg-name" placeholder="John Doe" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-lg">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Registration No. *</label>
+              <input required type="text" id="reg-no" placeholder="e.g. 2018-001" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-lg">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Email *</label>
+              <input required type="email" id="reg-email" placeholder="john@example.com" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-lg">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Phone Number *</label>
+              <input required type="tel" id="reg-phone" placeholder="01712 345678" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-lg">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Batch *</label>
+              <input required type="text" id="reg-batch" placeholder="e.g. 2020" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-lg">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Department *</label>
+              <input required type="text" id="reg-dept" placeholder="e.g. Computer Science" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-lg">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Current Address</label>
+            <input type="text" id="reg-address" placeholder="City, Country" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Photo URL</label>
+            <input type="text" id="reg-avatar" placeholder="https://..." value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-lg">
+          </div>
+          <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg shadow-sm transition">Submit Registration</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 3: DIRECTORY -->
+    <section id="view-directory" class="app-view hidden max-w-6xl mx-auto px-4 py-10">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-slate-900">Alumni Directory</h2>
+        <p class="text-slate-500 text-sm mt-1">Connect with verified fellow alumni</p>
+      </div>
+      <div id="directory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- VIEW: PROFILE VIEW -->
+    <section id="view-profile" class="app-view hidden max-w-4xl mx-auto px-4 py-10">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center gap-6">
+        <img id="prof-img" src="" class="w-32 h-32 rounded-xl object-cover border-2 border-brand-500">
+        <div class="space-y-1">
+          <h2 id="prof-name" class="text-2xl font-bold text-slate-900"></h2>
+          <p class="text-sm text-slate-500">Reg No: <span id="prof-reg" class="font-semibold text-slate-800"></span></p>
+          <p class="text-sm text-slate-500">Batch: <span id="prof-batch" class="font-semibold text-slate-800"></span> • Dept: <span id="prof-dept" class="font-semibold text-slate-800"></span></p>
+          <p class="text-sm text-slate-500">Email: <span id="prof-email" class="font-semibold text-slate-800"></span></p>
+          <p class="text-sm text-slate-500">Phone: <span id="prof-phone" class="font-semibold text-slate-800"></span></p>
+          <p class="text-sm text-slate-500">Location: <span id="prof-address" class="font-semibold text-slate-800"></span></p>
+          <button onclick="navigate('directory')" class="mt-3 px-4 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold">Back to Directory</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: EVENTS -->
+    <section id="view-events" class="app-view hidden max-w-6xl mx-auto px-4 py-10">
+      <h2 class="text-3xl font-bold text-slate-900 text-center mb-8">Upcoming Events & Reunions</h2>
+      <div id="events-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- VIEW: GALLERY -->
+    <section id="view-gallery" class="app-view hidden max-w-6xl mx-auto px-4 py-10">
+      <h2 class="text-3xl font-bold text-slate-900 text-center mb-8">Photo Gallery</h2>
+      <div id="gallery-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- VIEW: CONTACT -->
+    <section id="view-contact" class="app-view hidden max-w-4xl mx-auto px-4 py-10">
+      <h2 class="text-3xl font-bold text-slate-900 text-center mb-8">Contact Alumni Relations</h2>
+      <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div>
+          <h4 class="font-bold text-slate-800">Office Location</h4>
+          <p id="disp-contact-address" class="text-sm text-slate-600">Administrative Building, Room 204<br>University Campus</p>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-800">Email</h4>
+          <p id="disp-contact-email" class="text-sm text-slate-600">support@alumni-association.org</p>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-800">Phone</h4>
+          <p id="disp-contact-phone" class="text-sm text-slate-600">+880 2 9876543</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: ADMIN DASHBOARD (PROTECTED) -->
+    <section id="view-admin" class="app-view hidden max-w-7xl mx-auto px-4 py-8">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900">Admin Dashboard</h2>
+          <p class="text-xs text-slate-500">Live Management System</p>
+        </div>
+        <button onclick="navigate('cms')" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold hover:bg-brand-700">Open CMS Editor</button>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
+            <tr>
+              <th class="px-4 py-3">Name</th>
+              <th class="px-4 py-3">Dept</th>
+              <th class="px-4 py-3">Batch</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3">Action</th>
+            </tr>
+          </thead>
+          <tbody id="admin-table-body" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VIEW: CMS EDITOR (PROTECTED) -->
+    <section id="view-cms" class="app-view hidden max-w-5xl mx-auto px-4 py-8">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+        <div class="flex justify-between items-center pb-4 border-b">
+          <h2 class="text-2xl font-bold text-slate-900">Website CMS Editor</h2>
+          <button onclick="saveCmsHero()" class="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700">Save Changes</button>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-700 mb-1">Hero Title</label>
+          <input type="text" id="cms-hero-title" class="w-full text-sm px-3.5 py-2.5 border rounded-lg" value="Welcome to Our Alumni Community">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-700 mb-1">Hero Description</label>
+          <textarea id="cms-hero-desc" rows="2" class="w-full text-sm px-3.5 py-2.5 border rounded-lg">Reconnecting Friends | Building Networks | Shaping the Future</textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-700 mb-1">Hero Banner Image URL</label>
+          <input type="text" id="cms-hero-banner" class="w-full text-sm px-3.5 py-2.5 border rounded-lg" value="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80">
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: ADMIN LOGIN -->
+    <section id="view-admin-login" class="app-view hidden max-w-md mx-auto px-4 py-16">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xl p-8">
+        <div class="w-14 h-14 bg-brand-50 border border-brand-100 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm">
+          <i data-lucide="shield-alert" class="w-7 h-7"></i>
+        </div>
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-bold text-slate-900">Admin Authentication</h2>
+          <p class="text-xs text-slate-500 mt-1">Enter credentials to manage records and CMS.</p>
+        </div>
+
+        <div class="mb-5 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex justify-between items-center">
+          <div>
+            <p class="font-semibold text-slate-800">Demo Credentials:</p>
+            <p class="font-mono text-slate-500">admin@alumni.org / admin123</p>
+          </div>
+          <button onclick="fillDemoCredentials()" type="button" class="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-100 font-semibold rounded text-[11px] text-brand-600 transition">Auto-fill</button>
+        </div>
+
+        <div id="login-error-alert" class="hidden mb-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-rose-500"></i>
+          <span id="login-error-text">Invalid email or password.</span>
+        </div>
+
+        <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-700 mb-1">Admin Email</label>
+            <input required type="email" id="login-email" placeholder="admin@alumni.org" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-700 mb-1">Password</label>
+            <input required type="password" id="login-password" placeholder="••••••••" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm shadow-sm transition">Authenticate & Enter</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800 text-center">
+    <p>© 2026 Alumni Association. All rights reserved.</p>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
