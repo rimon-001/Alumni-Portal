@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Alumni Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans antialiased text-gray-800">
+
+  <!-- Topbar -->
+  <header class="bg-slate-900 text-white sticky top-0 z-40 shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-graduation-cap text-indigo-400 text-2xl"></i>
+        <span class="font-bold text-lg tracking-wide">Alumni Portal Admin</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="/" class="text-sm text-gray-300 hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i> Main Site</a>
+        <button onclick="logout()" class="text-sm bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded font-medium transition">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Members</div>
+        <div id="statTotal" class="text-3xl font-bold text-gray-900 mt-2">0</div>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="text-xs font-semibold text-amber-600 uppercase tracking-wider">Pending Approvals</div>
+        <div id="statPending" class="text-3xl font-bold text-amber-600 mt-2">0</div>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Approved Members</div>
+        <div id="statApproved" class="text-3xl font-bold text-emerald-600 mt-2">0</div>
+      </div>
+    </div>
+
+    <!-- Management Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <!-- Controls Bar -->
+      <div class="p-5 border-b border-gray-200 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4">
+        <!-- Search and Filters -->
+        <div class="flex flex-wrap items-center gap-2">
+          <input type="text" id="searchInput" oninput="loadMembers()" placeholder="Search name, reg no, dept..." 
+                 class="px-3 py-2 text-sm border rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          
+          <select id="statusFilter" onchange="loadMembers()" class="px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="all">All Statuses</option>
+            <option value="Pending">Pending Only</option>
+            <option value="Approved">Approved Only</option>
+          </select>
+        </div>
+
+        <!-- Add Member Button -->
+        <button onclick="openModal('add')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center justify-center gap-2 shadow-sm transition">
+          <i class="fa-solid fa-user-plus"></i> Add Member
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-gray-50 text-gray-600 font-semibold border-b">
+            <tr>
+              <th class="p-4">Member</th>
+              <th class="p-4">Reg No</th>
+              <th class="p-4">Dept & Batch</th>
+              <th class="p-4">Contact</th>
+              <th class="p-4">Status</th>
+              <th class="p-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="memberList" class="divide-y divide-gray-100">
+            <tr><td colspan="6" class="p-6 text-center text-gray-400">Loading records...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Member Form Modal (Add / Edit) -->
+  <div id="memberModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl relative max-h-[90vh] overflow-y-auto">
+      <h3 id="modalTitle" class="text-xl font-bold mb-4">Add Member</h3>
+      <form id="memberForm" onsubmit="saveMember(event)" class="space-y-4">
+        <input type="hidden" id="memberId">
+        
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Full Name *</label>
+          <input type="text" id="mName" required class="w-full border p-2 rounded-lg text-sm">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Reg No *</label>
+            <input type="text" id="mRegNo" required class="w-full border p-2 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Batch</label>
+            <input type="text" id="mBatch" placeholder="e.g. 2018-2022" class="w-full border p-2 rounded-lg text-sm">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Email *</label>
+            <input type="email" id="mEmail" required class="w-full border p-2 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Phone</label>
+            <input type="text" id="mPhone" class="w-full border p-2 rounded-lg text-sm">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Department</label>
+            <input type="text" id="mDept" placeholder="e.g. CSE" class="w-full border p-2 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Status</label>
+            <select id="mStatus" class="w-full border p-2 rounded-lg text-sm">
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Address / Present Location</label>
+          <input type="text" id="mAddress" class="w-full border p-2 rounded-lg text-sm">
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
+    if (!token) {
+      alert('Unauthorized! Please login as admin first.');
+      window.location.href = '/';
+    }
+
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/admin/stats', { headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.status === 401 || res.status === 403) return logout();
+        const data = await res.json();
+        document.getElementById('statTotal').innerText = data.total || 0;
+        document.getElementById('statPending').innerText = data.pending || 0;
+        document.getElementById('statApproved').innerText = data.approved || 0;
+      } catch (err) { console.error(err); }
+    }
+
+    async function loadMembers() {
+      const status = document.getElementById('statusFilter').value;
+      const search = encodeURIComponent(document.getElementById('searchInput').value);
+      try {
+        const res = await fetch(`/api/admin/members?status=${status}&search=${search}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const members = await res.json();
+        const tbody = document.getElementById('memberList');
+        tbody.innerHTML = '';
+
+        if (!members || members.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400">No members found.</td></tr>`;
+          return;
+        }
+
+        members.forEach(m => {
+          const isPending = m.status === 'Pending';
+          tbody.innerHTML += `
+            <tr class="hover:bg-gray-50/80 transition">
+              <td class="p-4 flex items-center gap-3">
+                <img src="${m.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80'}" class="w-9 h-9 rounded-full object-cover">
+                <div>
+                  <div class="font-semibold text-gray-900">${m.name}</div>
+                  <div class="text-xs text-gray-500">${m.email}</div>
+                </div>
+              </td>
+              <td class="p-4 text-gray-700 font-mono text-xs">${m.reg_no || '—'}</td>
+              <td class="p-4 text-gray-700">${m.dept || '—'} <span class="text-xs text-gray-400 block">${m.batch || ''}</span></td>
+              <td class="p-4 text-gray-700">${m.phone || '—'}</td>
+              <td class="p-4">
+                <span class="px-2.5 py-1 text-xs rounded-full font-semibold ${isPending ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}">
+                  ${m.status}
+                </span>
+              </td>
+              <td class="p-4 text-right space-x-2">
+                ${isPending ? `<button onclick="approveMember(${m.id})" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded font-medium transition">Approve</button>` : ''}
+                <button onclick='openEditModal(${JSON.stringify(m).replace(/'/g, "&apos;")})' class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 px-2.5 py-1 rounded font-medium transition">Edit</button>
+                <button onclick="deleteMember(${m.id})" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1 rounded font-medium transition">Delete</button>
+              </td>
+            </tr>
+          `;
+        });
+      } catch (err) { console.error(err); }
+    }
+
+    async function approveMember(id) {
+      if (!confirm('Approve this member to show on the public directory?')) return;
+      const res = await fetch(`/api/admin/members/${id}/approve`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchStats();
+        loadMembers();
+      } else {
+        alert('Failed to approve member.');
+      }
+    }
+
+    async function deleteMember(id) {
+      if (!confirm('Are you sure you want to permanently delete this member?')) return;
+      const res = await fetch(`/api/admin/members/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchStats();
+        loadMembers();
+      } else {
+        alert('Failed to delete member.');
+      }
+    }
+
+    function openModal(mode) {
+      document.getElementById('memberForm').reset();
+      document.getElementById('memberId').value = '';
+      document.getElementById('modalTitle').innerText = 'Add Member';
+      document.getElementById('memberModal').classList.remove('hidden');
+    }
+
+    function openEditModal(m) {
+      document.getElementById('memberId').value = m.id;
+      document.getElementById('mName').value = m.name;
+      document.getElementById('mRegNo').value = m.reg_no;
+      document.getElementById('mEmail').value = m.email;
+      document.getElementById('mPhone').value = m.phone || '';
+      document.getElementById('mBatch').value = m.batch || '';
+      document.getElementById('mDept').value = m.dept || '';
+      document.getElementById('mAddress').value = m.address || '';
+      document.getElementById('mStatus').value = m.status || 'Approved';
+      document.getElementById('modalTitle').innerText = 'Edit Member';
+      document.getElementById('memberModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('memberModal').classList.add('hidden');
+    }
+
+    async function saveMember(e) {
+      e.preventDefault();
+      const id = document.getElementById('memberId').value;
+      const body = {
+        name: document.getElementById('mName').value,
+        reg_no: document.getElementById('mRegNo').value,
+        email: document.getElementById('mEmail').value,
+        phone: document.getElementById('mPhone').value,
+        batch: document.getElementById('mBatch').value,
+        dept: document.getElementById('mDept').value,
+        address: document.getElementById('mAddress').value,
+        status: document.getElementById('mStatus').value
+      };
+
+      const url = id ? `/api/admin/members/${id}` : '/api/admin/members';
+      const method = id ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        closeModal();
+        fetchStats();
+        loadMembers();
+      } else {
+        alert(data.error || 'Failed to save member.');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('adminToken');
+      window.location.href = '/';
+    }
+
+    // Initial Load
+    fetchStats();
+    loadMembers();
+  </script>
+</body>
+</html>
