@@ -34,8 +34,8 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Catch-all route for Single Page Application navigation
-app.get('*', (req, res) => {
+// Fallback for Single Page Application navigation (Express 5 compatible)
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
