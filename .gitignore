@@ -4,3 +4,4 @@ uploads/*
 !uploads/.gitkeep
 db/*.sqlite
 .DS_Store
+node_modules
